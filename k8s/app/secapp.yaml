@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: secapp
-          image: ghcr.io/lsh-3016/secapp:<커밋SHA>
+          image: ghcr.io/lsh-3016/secapp:6c69ff2f449681aa208d08d031d97aedc8b0a7a4d910291650eaa204780dbaef
           ports: [{containerPort: 3000}]
           env:
             - name: POSTGRES_PASSWORD
