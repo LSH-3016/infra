@@ -1,0 +1,15 @@
+- name: k3s 설치
+  hosts: k3s
+  become: true
+  tasks:
+    - name: k3s 설치 (server + worker 겸용)
+      ansible.builtin.shell: |
+        curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode 644
+      args:
+        creates: /usr/local/bin/k3s
+
+    - name: k3s 기동 확인
+      ansible.builtin.systemd:
+        name: k3s
+        state: started
+        enabled: true

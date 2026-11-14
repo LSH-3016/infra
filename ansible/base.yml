@@ -1,0 +1,27 @@
+- name: k3s-1 기본 설정
+  hosts: k3s
+  become: true
+  tasks:
+    - name: 패키지 업데이트
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: dist
+
+    - name: 기본 도구 설치
+      ansible.builtin.apt:
+        name: [curl, git, vim, net-tools, jq, auditd]
+        state: present
+
+    - name: swap 끄기 (k8s 권장)
+      ansible.builtin.command: swapoff -a
+      changed_when: false
+
+    - name: fstab에서 swap 제거
+      ansible.builtin.replace:
+        path: /etc/fstab
+        regexp: '^([^#].*\sswap\s.*)$'
+        replace: '# \1'
+
+    - name: 시간대 설정
+      community.general.timezone:
+        name: Asia/Seoul

@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: secapp
+  namespace: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: secapp}
+  template:
+    metadata:
+      labels: {app: secapp}
+    spec:
+      containers:
+        - name: secapp
+          image: ghcr.io/lsh-3016/secapp:<커밋SHA>
+          ports: [{containerPort: 3000}]
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef: {name: postgres-secret, key: POSTGRES_PASSWORD}
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef: {name: app-secret, key: JWT_SECRET}
+          readinessProbe:
+            httpGet: {path: /health, port: 3000}
+          resources:
+            requests: {cpu: 50m, memory: 64Mi}
+            limits: {memory: 256Mi}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: secapp
+  namespace: app
+spec:
+  selector: {app: secapp}
+  ports: [{port: 3000}]

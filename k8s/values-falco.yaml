@@ -1,0 +1,17 @@
+driver:
+  kind: modern_ebpf
+tty: true
+collectors:
+  containerd:
+    enabled: true
+    socket: /run/k3s/containerd/containerd.sock
+resources:
+  requests: {cpu: 100m, memory: 256Mi}
+  limits: {memory: 512Mi}
+falcosidekick:
+  enabled: true
+  config:
+    loki:
+      hostport: http://loki.monitoring.svc:3100
+    alertmanager:
+      hostport: http://monitoring-kube-prometheus-alertmanager.monitoring.svc:9093

@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: secapp
+  namespace: cicd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/LSH-3016/infra.git
+    targetRevision: main
+    path: k8s/app
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: app
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

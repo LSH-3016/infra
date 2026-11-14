@@ -1,0 +1,27 @@
+- name: k3s TLS SAN 추가
+  hosts: k3s
+  become: true
+  tasks:
+    - name: k3s 설정 디렉터리
+      ansible.builtin.file:
+        path: /etc/rancher/k3s
+        state: directory
+
+    - name: config.yaml 작성
+      ansible.builtin.copy:
+        dest: /etc/rancher/k3s/config.yaml
+        content: |
+          write-kubeconfig-mode: "644"
+          tls-san:
+            - 192.168.20.11
+            - k3s-1
+
+    - name: 기존 서빙 인증서 삭제 (재생성 유도)
+      ansible.builtin.shell: |
+        kubectl --kubeconfig /etc/rancher/k3s/k3s.yaml delete secret k3s-serving -n kube-system || true
+        rm -f /var/lib/rancher/k3s/server/tls/dynamic-cert.json
+
+    - name: k3s 재시작
+      ansible.builtin.systemd:
+        name: k3s
+        state: restarted

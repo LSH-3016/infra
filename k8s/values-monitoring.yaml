@@ -1,0 +1,28 @@
+grafana:
+  adminPassword: "CHANGE_ME"
+  service:
+    type: NodePort
+    nodePort: 30300
+prometheus:
+  prometheusSpec:
+    retention: 3d
+    resources:
+      requests: {cpu: 200m, memory: 400Mi}
+      limits: {memory: 1Gi}
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: local-path
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 5Gi
+alertmanager:
+  alertmanagerSpec:
+    resources:
+      requests: {cpu: 50m, memory: 64Mi}
+# k3s는 이 컴포넌트들을 별도 Pod로 두지 않아 알림 오탐이 생김
+kubeEtcd: {enabled: false}
+kubeScheduler: {enabled: false}
+kubeControllerManager: {enabled: false}
+kubeProxy: {enabled: false}
